@@ -11,9 +11,9 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ text, onClick, type = "button", variant = "primary", className = "" }) => {
     const baseStyles = "px-4 py-2 rounded font-medium";
     const variants = {
-        primary: "bg-blue-500 text-white hover:bg-blue-600",
-        secondary: "bg-gray-500 text-white hover:bg-gray-600",
-        danger: "bg-red-500 text-white hover:bg-red-600",
+        primary: "bg-[var(--primary)] text-[var(--foreground)] hover:bg-[var(--primary-hover)]",
+        secondary: "bg-[var(--secondary)] text-[var(--foreground)] hover:bg-[var(--secondary-hover)]",
+        danger: "bg-[var(--error)] text-[var(--foreground)] hover:bg-[var(--error-hover)]",
     };
 
     return (
