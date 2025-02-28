@@ -31,6 +31,7 @@ export default function Login() {
 
       if (res.status === 200) {
         localStorage.setItem("token", data.token);  // Store token in local storage
+        localStorage.setItem("user", JSON.stringify(data.user));  // Store user in local storage
         window.location.href = "/";  // Redirect to home or dashboard
       } else {
         setError(data.message);

@@ -56,13 +56,17 @@ const QuizDetail = ({ params }: { params: Promise<{ id: string }> }) => {
     const response = await fetch(`/api/quiz/${id}/submit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answers }),
+      body: JSON.stringify({
+        answers,
+        user_id: JSON.parse(localStorage.getItem("user") || '{}').id,
+      }),
     });
 
     if (response.ok) {
       router.push("/results"); // Redirect to results page after submission
     }
   };
+
 
   if (!quiz) return <div>Loading...</div>;
 

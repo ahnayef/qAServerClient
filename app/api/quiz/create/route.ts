@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
-import mysql2 from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 import db from "@/lib/db";
 
 export async function POST(req: Request) {
-    const { title, description, questions } = await req.json();
+    const { title, description, questions, creator_id } = await req.json();
 
-    if (!title || !description || !questions || questions.length === 0) {
+    if (!title || !description || !questions || questions.length === 0 || !creator_id) {
         return NextResponse.json({ message: "All fields are required!" }, { status: 400 });
     }
 
     const quizId = uuidv4();  // Generate a unique quizId
-    const query = "INSERT INTO quizzes (id, title, description) VALUES (?, ?, ?)";
+    const query = "INSERT INTO quizzes (id, title, description, creator_id) VALUES (?, ?, ?, ?)";
 
     try {
-
-
-        await db.query(query, [quizId, title, description]);
+        // Insert quiz with creator_id
+        await db.query(query, [quizId, title, description, creator_id]);
 
         // Insert questions into database
         for (const question of questions) {

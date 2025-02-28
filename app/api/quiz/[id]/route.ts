@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import mysql2 from "mysql2";
 import db from "@/lib/db";
-import React from "react";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
     const { id } = params;

@@ -62,9 +62,11 @@ const CreateQuiz = () => {
                 options: q.options,
                 correctAnswer: q.correctAnswer,
             })),
+            creator_id: JSON.parse(localStorage.getItem("user") || "{}").id,
         };
 
         try {
+            console.log(quizData);
             const response = await fetch("/api/quiz/create", {
                 method: "POST",
                 headers: {
