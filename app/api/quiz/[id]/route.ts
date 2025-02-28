@@ -3,12 +3,14 @@ import mysql2 from "mysql2";
 import db from "@/lib/db";
 import React from "react";
 
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     const { id } = params;
 
+    if (!id) {
+        return NextResponse.json({ message: "Quiz ID not provided" }, { status: 400 });
+    }
+
     try {
-
-
         // Fetch quiz data
         const [quizData]: any = await db.query("SELECT * FROM quizzes WHERE id = ?", [id]);
         const [questions]: any = await db.query("SELECT * FROM questions WHERE quiz_id = ?", [id]);

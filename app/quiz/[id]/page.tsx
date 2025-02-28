@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Button from "@/app/components/Button";
+import { use } from "react"; // Import the `use` function from React
 
 interface Question {
   id: string;
@@ -10,14 +11,14 @@ interface Question {
   options: string[];
 }
 
-const QuizDetail = ({ params }: { params: { id: string } }) => {
+const QuizDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
   const [quiz, setQuiz] = useState<any>(null);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes timer
 
   // Unwrap the `params` correctly using React.use
-  const { id } = params;
+  const { id } = use(params);
 
   useEffect(() => {
     const fetchQuiz = async () => {
