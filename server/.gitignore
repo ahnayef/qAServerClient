@@ -12,11 +12,6 @@ yarn-error.log*
 # Environment Variables
 .env
 
-# Build Files
-dist/
-.next/
-out/
-
 # OS-specific files
 .DS_Store
 Thumbs.db
