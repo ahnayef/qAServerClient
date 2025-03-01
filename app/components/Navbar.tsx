@@ -35,6 +35,7 @@ const Navigation = () => {
   const handleLogout = () => {
     // Clear user data from localStorage and update state
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     router.push("/"); // Redirect to the homepage or login page
   };
@@ -51,13 +52,13 @@ const Navigation = () => {
             <XPDisplay xp={userXP} /> {/* Display XP if logged in */}
             <button
               onClick={() => router.push("/quiz")}
-              className="text-white hover:text-yellow-400"
+              className="text-white hover:text-yellow-400 cursor-pointer"
             >
               Quizzes
             </button>
             <button
               onClick={handleLogout}
-              className="text-white hover:text-yellow-400"
+              className="text-red-500 hover:text-red-300 cursor-pointer"
             >
               Logout
             </button>

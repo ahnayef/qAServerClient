@@ -3,7 +3,7 @@ import db from "@/lib/db";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: Request, context: { params: { id: string } }) {
-    const { id } = await context.params; // Await the params here
+    const { id } = await context.params;
     const { answers, user_id } = await request.json();
 
     if (!id || !answers || !user_id) {

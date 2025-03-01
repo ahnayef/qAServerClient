@@ -4,16 +4,15 @@ import { useEffect, useState } from "react";
 import Button from "@/app/components/Button";
 import { FaLightbulb, FaChartLine, FaAward } from "react-icons/fa";
 import Navbar from "@/app/components/Navbar"; // Import Navbar component
+import { isAuthenticated } from "@/lib/auth";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    // Check if the token exists in localStorage
-    if (localStorage.getItem("token")) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+    useEffect(() => {
+        const loggedIn = isAuthenticated();
+        setIsLoggedIn(loggedIn);
+    }, []);
 
   return (
     <>
@@ -32,11 +31,6 @@ export default function Home() {
                 <Link href="/create-quiz">
                   <Button className="bg-yellow-400 text-gray-900 px-6 py-3 font-semibold">
                     Create Quiz
-                  </Button>
-                </Link>
-                <Link href="/profile">
-                  <Button className="bg-gray-700 px-6 py-3 font-semibold">
-                    Profile
                   </Button>
                 </Link>
                 {/* Add Listing Page Link */}
