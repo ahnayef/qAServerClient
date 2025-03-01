@@ -1,89 +1,78 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { FiMenu, FiX } from "react-icons/fi";
-import Button from "@/app/components/Button";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import XPDisplay from "./XPDisplay"; // Import XPDisplay component
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const Navigation = () => {
+  const router = useRouter();
+  const [userXP, setUserXP] = useState<number>(0); // State to hold user's XP
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // State for authentication status
 
   useEffect(() => {
-    // Check if the token exists in localStorage
-    if (localStorage.getItem("token")) {
+    // Check if the user is logged in by looking for user data in localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user && user.id) {
       setIsLoggedIn(true);
+
+      // Fetch user's XP if logged in
+      const fetchUserXP = async () => {
+        const response = await fetch(`/api/user/xp?id=${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setUserXP(data.xp);
+        } else {
+          console.error("Failed to fetch user XP");
+        }
+      };
+
+      fetchUserXP();
+    } else {
+      setIsLoggedIn(false);
     }
-  }, []);
+  }, []); // Runs once on mount
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    // Clear user data from localStorage and update state
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
+    router.push("/"); // Redirect to the homepage or login page
   };
 
   return (
-    <nav className="bg-gray-900 text-white px-6 py-4 shadow-md">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <Link href="/" className="text-2xl font-bold text-yellow-400">
-          QuizMaster
-        </Link>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-6">
-          <Link href="/" className="hover:text-yellow-400">Home</Link>
-          {/* Add Listing Link in Navbar */}
-          <Link href="/quiz-list" className="hover:text-yellow-400">Quizzes</Link>
-          {isLoggedIn ? (
-            <>
-              <Link href="/profile" className="hover:text-yellow-400">Profile</Link>
-              <Button
-                onClick={handleLogout}
-                className="bg-gray-700 px-6 py-3 font-semibold hover:bg-gray-600"
-              >
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="hover:text-yellow-400">Login</Link>
-              <Link href="/register" className="hover:text-yellow-400">Register</Link>
-            </>
-          )}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-2xl">
-          {isOpen ? <FiX /> : <FiMenu />}
-        </button>
+    <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
+      <div className="text-2xl font-semibold cursor-pointer" onClick={() => router.push("/")}>
+        QuizApp
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="md:hidden mt-4 flex flex-col items-center bg-gray-800 p-4 rounded-lg">
-          <Link href="/" className="py-2 w-full text-center hover:text-yellow-400" onClick={() => setIsOpen(false)}>Home</Link>
-          {/* Add Listing Link in Mobile Menu */}
-          <Link href="/listing" className="py-2 w-full text-center hover:text-yellow-400" onClick={() => setIsOpen(false)}>Quizzes</Link>
-          {isLoggedIn ? (
-            <>
-              <Link href="/profile" className="py-2 w-full text-center hover:text-yellow-400" onClick={() => setIsOpen(false)}>Profile</Link>
-              <Button
-                onClick={handleLogout}
-                className="bg-gray-700 py-2 w-full text-center font-semibold hover:bg-gray-600"
-              >
-                Logout
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="py-2 w-full text-center hover:text-yellow-400" onClick={() => setIsOpen(false)}>Login</Link>
-              <Link href="/register" className="py-2 w-full text-center hover:text-yellow-400" onClick={() => setIsOpen(false)}>Register</Link>
-            </>
-          )}
-        </div>
-      )}
+      <div className="flex items-center space-x-4">
+        {isLoggedIn ? (
+          <>
+            <XPDisplay xp={userXP} /> {/* Display XP if logged in */}
+            <button
+              onClick={() => router.push("/quiz")}
+              className="text-white hover:text-yellow-400"
+            >
+              Quizzes
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-yellow-400"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => router.push("/register")}
+            className="bg-yellow-400 text-gray-900 px-6 py-3 font-semibold cursor-pointer"
+          >
+            Get Started
+          </button>
+        )}
+      </div>
     </nav>
   );
 };
 
-export default Navbar;
+export default Navigation;
