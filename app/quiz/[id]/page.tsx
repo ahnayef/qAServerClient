@@ -17,7 +17,6 @@ const QuizDetail = ({ params }: { params: Promise<{ id: string }> }) => {
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes timer
 
-  // Unwrap the `params` correctly using React.use
   const { id } = use(params);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ const QuizDetail = ({ params }: { params: Promise<{ id: string }> }) => {
     });
 
     if (response.ok) {
-      router.push("/results"); // Redirect to results page after submission
+      router.push(`/results/${id}`);
     }
   };
 

@@ -1,46 +1,28 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
-import { v4 as uuidv4 } from "uuid";
 
-export async function POST(request: Request, context: { params: { id: string } }) {
-    const { id } = await context.params;
-    const { answers, user_id } = await request.json();
+export async function GET(request: Request) {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+    const user_id = url.searchParams.get("user_id");
 
-    if (!id || !answers || !user_id) {
-        return NextResponse.json({ message: "Quiz ID, answers, or user ID not provided" }, { status: 400 });
+    if (!id || !user_id) {
+        return NextResponse.json({ message: "Quiz ID or user ID not provided" }, { status: 400 });
     }
 
     try {
-        // Fetch quiz and questions data to validate the answers
-        const [quizData]: any = await db.query("SELECT * FROM quizzes WHERE id = ?", [id]);
-        const [questions]: any = await db.query("SELECT * FROM questions WHERE quiz_id = ?", [id]);
-
-        if (quizData.length === 0) {
-            return NextResponse.json({ message: "Quiz not found" }, { status: 404 });
-        }
-
-        // Calculate the score based on the answers
-        let score = 0;
-        questions.forEach((question: any) => {
-            const correctAnswer = question.correct_answer;
-            const userAnswer = answers[question.id];
-
-            // Check if the user's answer is correct
-            if (userAnswer === correctAnswer) {
-                score++;
-            }
-        });
-
-        // Store the attempt result in the database
-        const attemptId = uuidv4();
-        await db.query(
-            "INSERT INTO attempts (id, quiz_id, user_id, score) VALUES (?, ?, ?, ?)",
-            [attemptId, id, user_id, score]  // Use the user_id passed in the request
+        const [result]: any = await db.query(
+            "SELECT score FROM attempts WHERE quiz_id = ? AND user_id = ? ORDER BY created_at DESC LIMIT 1",
+            [id, user_id]
         );
 
-        return NextResponse.json({ message: "Quiz submitted successfully", score });
+        if (result.length === 0) {
+            return NextResponse.json({ message: "No results found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ result: result[0] });
     } catch (error) {
-        console.error("Error submitting quiz:", error);
-        return NextResponse.json({ message: "Failed to submit quiz." }, { status: 500 });
+        console.error("Error fetching result:", error);
+        return NextResponse.json({ message: "Failed to fetch result." }, { status: 500 });
     }
 }
